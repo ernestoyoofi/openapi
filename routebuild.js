@@ -27,14 +27,14 @@ const listReq = [
     params: (query, params, body) => ({
       ...query
     }),
-    func: require("./modules/komiku").Other_Recommend
+    func: require("./scrap/komiku").Other_Recommend
   },
   {
     path: "/komiku.id/search",
     params: (query, params, body) => ({
       ...query
     }),
-    func: require("./modules/komiku").Manga_Search
+    func: require("./scrap/komiku").Manga_Search
   },
   {
     path: "/komiku.id/genre/:slug",
@@ -42,7 +42,7 @@ const listReq = [
       ...query,
       slug: params.slug
     }),
-    func: require("./modules/komiku").Manga_Genre
+    func: require("./scrap/komiku").Manga_Genre
   },
   {
     path: "/komiku.id/:slug/",
@@ -50,7 +50,7 @@ const listReq = [
       ...query,
       slug: params.slug
     }),
-    func: require("./modules/komiku").Manga_Detail
+    func: require("./scrap/komiku").Manga_Detail
   },
   {
     path: "/komiku.id/:slug/read",
@@ -58,7 +58,7 @@ const listReq = [
       ...query,
       slug: params.slug
     }),
-    func: require("./modules/komiku").Manga_Read
+    func: require("./scrap/komiku").Manga_Read
   },
   {
     path: "/bmkg/cuaca/:slug/area",
@@ -66,14 +66,14 @@ const listReq = [
       provinsi: params.slug,
       onlyAreaReturn: true
     }),
-    func: require("./modules/bmkg").APICuaca
+    func: require("./scrap/bmkg").APICuaca
   },
   {
     path: "/bmkg/cuaca/:slug/view",
     params: (query, params, body) => ({
       provinsi: params.slug,
     }),
-    func: require("./modules/bmkg").APICuaca
+    func: require("./scrap/bmkg").APICuaca
   }
 ]
 
