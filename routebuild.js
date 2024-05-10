@@ -1,8 +1,8 @@
 const route = require("express").Router()
 
-const komiku = require("./lib/komiku")
-const bmkg = require("./lib/bmkg")
-const ssstik = require("./lib/ssstik")
+const komiku = require("./lib/komiku.js")
+const bmkg = require("./lib/bmkg.js")
+const ssstik = require("./lib/ssstik.js")
 
 const codeStatus = {
   notFound: {
