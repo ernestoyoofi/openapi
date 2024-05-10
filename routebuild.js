@@ -9,6 +9,10 @@ const codeStatus = {
     status: 404,
     message: "Not Found"
   },
+  badResponded: {
+    status: 400,
+    message: "More server only responses error"
+  },
   notValid: {
     status: 402,
     message: "Fulfill the Requirements in the Documentation"
@@ -20,7 +24,7 @@ const codeStatus = {
   internalError: {
     status: 500,
     message: "Internal Server Error"
-  }
+  },
 }
 const searchCode = (data) => {
   for(let a of Object.keys(codeStatus)) {
