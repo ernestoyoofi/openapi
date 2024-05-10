@@ -1,117 +1,158 @@
 const route = require("express").Router()
 
+const komiku = require("./lib/komiku")
+const bmkg = require("./lib/bmkg")
+const ssstik = require("./lib/ssstik")
+
 const codeStatus = {
-  notFound: 404,
-  notValid: 402,
-  notAccpted: 406,
-  internalError: 500,
-}
-const codeMessage = {
-  notFound: "Not Found",
-  notValid: "Fulfill the Requirements in the Documentation",
-  notAccpted: "Access Limitations For You",
-  internalError: "Internal Server Error"
+  notFound: {
+    status: 404,
+    message: "Not Found"
+  },
+  notValid: {
+    status: 402,
+    message: "Fulfill the Requirements in the Documentation"
+  },
+  notAccpted: {
+    status: 406,
+    message: "Access Limitations For You"
+  },
+  internalError: {
+    status: 500,
+    message: "Internal Server Error"
+  }
 }
 const searchCode = (data) => {
   for(let a of Object.keys(codeStatus)) {
-    const b = Object.keys(data).indexOf(a)
-    if(b != -1) {
-      return a
-    }
+    if(Object.keys(data).indexOf(a) != -1) return a
   }
 }
+const responQuick = (request, req, res) => {
+  const searchcode = searchCode(request)
+  const status = codeStatus[searchcode]?.status || request?.statusRespon || 200
+  const message = codeStatus[searchcode]?.message || request?.message || undefined
 
-const listReq = [
-  {
-    path: "/komiku.id/",
-    params: (query, params, body) => ({
-      ...query
-    }),
-    func: require("./scrap/komiku").Other_Recommend
-  },
-  {
-    path: "/komiku.id/search",
-    params: (query, params, body) => ({
-      ...query
-    }),
-    func: require("./scrap/komiku").Manga_Search
-  },
-  {
-    path: "/komiku.id/genre/:slug",
-    params: (query, params, body) => ({
-      ...query,
-      slug: params.slug
-    }),
-    func: require("./scrap/komiku").Manga_Genre
-  },
-  {
-    path: "/komiku.id/:slug/",
-    params: (query, params, body) => ({
-      ...query,
-      slug: params.slug
-    }),
-    func: require("./scrap/komiku").Manga_Detail
-  },
-  {
-    path: "/komiku.id/:slug/read",
-    params: (query, params, body) => ({
-      ...query,
-      slug: params.slug
-    }),
-    func: require("./scrap/komiku").Manga_Read
-  },
-  {
-    path: "/bmkg/cuaca/:slug/area",
-    params: (query, params, body) => ({
-      provinsi: params.slug,
-      onlyAreaReturn: true
-    }),
-    func: require("./scrap/bmkg").APICuaca
-  },
-  {
-    path: "/bmkg/cuaca/:slug/view",
-    params: (query, params, body) => ({
-      provinsi: params.slug,
-    }),
-    func: require("./scrap/bmkg").APICuaca
+  if(searchcode) {
+    return res.status(status).json({
+      status: status,
+      message: message
+    })
   }
-]
 
-listReq.forEach((a, i) => {
-  if(typeof a.path != "string" || typeof a.params != "function" || typeof a.func != "function") return;
-  
-  route[a.method?.toLowerCase()||"get"](a.path, async (req, res) => {
-    try {
-      const params = a.params(req.query, req.params, req.body)
-      const request = await a.func(params)
-      const scCode = searchCode(request)
-      const status = codeStatus[scCode] || request.statusRespon || 200
-      const message = codeMessage[scCode] || request.message || undefined
-      if(scCode) {
-        return res.status(status).json({
-          status: status,
-          message: message,
-          docs: request.docs,
-        })
-      }
-      return res.status(status).json({
-        status: status,
-        message: message,
-        data: {
-          ...request,
-          message: undefined,
-          statusRespon: undefined,
-          addRespon: undefined,
-        }
-      })
-    }catch(err) {
-      console.log(`[${a.path} Error]`, err.stack)
-      res.status(500).json({
-        status: 500,
-        message: "Internal Server Error"
-      })
+  if(Array.isArray(req.addRespon?.header)) {
+    for(const head of req.addRespon.header) {
+      res.setHeader(head.key, head.value)
+    }
+  }
+
+  return res.status(status).json({
+    status: status,
+    message: message,
+    data: {
+      ...request,
+      statusRespon: undefined,
+      message: undefined,
+      addRespon: undefined,
     }
   })
-})
+}
 
+/// # --- [ KOMIKU ID ] ---
+route.get("/komiku.id", async (req, res) => {
+  try {
+    const params = { length: req.query.length }
+    const request = await komiku.Manga_Recommend(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komiku.id/search", async (req, res) => {
+  try {
+    const params = {
+      query: req.query.q,
+      length: req.query.length
+    }
+    const request = await komiku.Manga_Search(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komiku.id/genre/:slug", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug,
+      length: req.query.length
+    }
+    const request = await komiku.Manga_Genre(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komiku.id/manga/:slug", async (req, res) => {
+  try {
+    const params = { slug: req.params.slug }
+    const request = await komiku.Manga_Detail(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komiku.id/manga/:slug/read", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug,
+      length: req.query.next
+    }
+    const request = await komiku.Manga_Read(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+/// # ---- [ BMKG ] ----
+route.get("/bmkg/cuaca/:slug/areaonly", async (req, res) => {
+  try {
+    const params = {
+      provinsi: req.params.slug,
+      onlyAreaReturn: true
+    }
+    const request = await bmkg.APICuaca(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+}) 
+route.get("/bmkg/cuaca/:slug/info", async (req, res) => {
+  try {
+    const params = {
+      provinsi: req.params.slug,
+      areacode: req.query.areacode
+    }
+    const request = await bmkg.APICuaca(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+/// # ---- [ SSSTIK.IO ] ----
+route.get("/ssstik/info", async (req, res) => {
+  try {
+    const params = { url: req.query.url }
+    const request = await ssstik.GetInfoDownload(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
 module.exports = route

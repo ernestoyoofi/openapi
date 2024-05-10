@@ -6,6 +6,7 @@ Dokumentasi untuk melakukan request api atau detail untuk melakukan request
 
 - [Komiku.id](./modules/komiku.js) • 8 Mei 2024
 - [BMKG Cuaca & Gempa](./modules/bmkg.js) • 8 Mei 2024
+- [Ssstik.io - Tiktok Downloader](./lib/ssstik.js) • 9 Mei 2024
 
 ## Respon Global
 
@@ -26,7 +27,7 @@ Dokumentasi untuk melakukan request api atau detail untuk melakukan request
 ## Origin URL
 
 ```bash
-https://openapi.ernestoyoofi.vercel.app/
+https://openapi.nakiko.vercel.app/
 ```
 
 ## Komiku.id

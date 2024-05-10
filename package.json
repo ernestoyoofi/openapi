@@ -3,10 +3,11 @@
     "axios": "^1.6.8",
     "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.6",
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "uuid": "^9.0.1"
   },
   "name": "openapi",
-  "version": "1.0.0",
+  "version": "0.5.105",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index --dev",
