@@ -32,7 +32,7 @@ Dokumentasi untuk melakukan request api atau detail untuk melakukan request
 https://openapi.nakiko.vercel.app/
 ```
 
-## Dokumentasi Setiap Request
+# Dokumentasi Setiap Request
 
 ### Komiku.id - Rekomendasi
 
