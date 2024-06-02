@@ -34,6 +34,8 @@ https://openapi.nakiko.vercel.app/
 
 # Dokumentasi Setiap Request
 
+## Komiku.id
+
 ### Komiku.id - Rekomendasi
 
 **Path URL**
@@ -208,6 +210,7 @@ https://openapi.nakiko.vercel.app/
   }
 }
 ```
+## BMKG - Cuaca
 
 ### BMKG - Cuaca Area Only
 
