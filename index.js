@@ -1,6 +1,7 @@
 const timeStart = new Date().getTime()
 const express = require("express")
 const cookieParser = require("cookie-parser")
+const cors = require("cors")
 
 const port = process.env.PORT || 3000
 const app = express()
@@ -10,6 +11,7 @@ const apiregister = require("./routebuild")
 
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors())
 app.use(modhead)
 app.use(apiregister)
 app.use((req, res) => {

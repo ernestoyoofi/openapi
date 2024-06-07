@@ -3,14 +3,16 @@
     "axios": "^1.6.8",
     "cheerio": "^1.0.0-rc.12",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "uuid": "^9.0.1"
   },
   "name": "openapi",
-  "version": "0.5.105",
+  "version": "0.7.80",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index --dev",
+    "inspected": "node --inspect --dev index",
     "start": "node index"
   },
   "keywords": [],

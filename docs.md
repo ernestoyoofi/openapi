@@ -5,6 +5,7 @@ Dokumentasi untuk melakukan request api atau detail untuk melakukan request
 ## List Module Script
 
 - [Komiku.id](./modules/komiku.js) • 8 Mei 2024
+- [Maid.my.id](./modules/maid.js) • 7 Juni 2024 (New Adding)
 - [BMKG Cuaca & Gempa](./modules/bmkg.js) • 8 Mei 2024
 - [Ssstik.io - Tiktok Downloader](./lib/ssstik.js) • 9 Mei 2024
 
