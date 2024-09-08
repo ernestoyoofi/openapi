@@ -1,3 +1,4 @@
+const fs = require("fs")
 const route = require("express").Router()
 
 const komiku = require("./lib/komiku.js")
@@ -122,6 +123,16 @@ route.get("/komiku.id/manga/:slug/read", async (req, res) => {
     return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
   }
 })
+route.get("/komiku.id/manga/:slug/read/view-web", (req, res) => {
+  console.log(req)
+  res.send(
+    fs.readFileSync(`${process.cwd()}/page/manga-reveal.html`,"utf-8")
+    .replaceAll("$HOSTED", "komiku.id")
+    .replaceAll("$SLUGREAD", req.params?.slug)
+    .replaceAll("--BACKGROUND", req.query?.colorbg?.replace("hash","#") || "")
+    .replaceAll("--COLORTEXT", req.query?.colortx?.replace("hash","#") || "")
+  )
+})
 /// # ---- [ MAID.MY.ID ] ----
 route.get("/maid.my.id", async (req, res) => {
   try {
@@ -182,6 +193,16 @@ route.get("/maid.my.id/manga/:slug/read", async (req, res) => {
     return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
   }
 })
+route.get("/maid.my.id/manga/:slug/read/view-web", (req, res) => {
+  console.log(req)
+  res.send(
+    fs.readFileSync(`${process.cwd()}/page/manga-reveal.html`,"utf-8")
+    .replaceAll("$HOSTED", "maid.my.id")
+    .replaceAll("$SLUGREAD", req.params?.slug)
+    .replaceAll("--BACKGROUND", req.query?.colorbg?.replace("hash","#") || "")
+    .replaceAll("--COLORTEXT", req.query?.colortx?.replace("hash","#") || "")
+  )
+})
 /// # ---- [ BMKG ] ----
 route.get("/bmkg/cuaca/:slug/areaonly", async (req, res) => {
   try {
@@ -220,4 +241,5 @@ route.get("/ssstik/info", async (req, res) => {
     return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
   }
 })
+
 module.exports = route
