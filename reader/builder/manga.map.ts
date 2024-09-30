@@ -4,7 +4,8 @@ interface GenreList {
 }
 interface RecommendChapter {
   label: String,
-  ch: String,
+  ch?: String,
+  slug?: String,
   update?: String,
 }
 interface ChapterView {
@@ -16,7 +17,7 @@ interface ChapterView {
 interface CardManga {
   image: String|URL,
   title: String,
-  desc: String,
+  desc?: String,
   rate?: String, // Only maid.my.id
   rec?: RecommendChapter | null, // Only maid.my.id
   genre?: GenreList | null, // Only maid.my.id
@@ -31,6 +32,7 @@ interface ListPages {
   list: CardManga[]
 }
 interface DetailManga {
+  banner?: String, // Only komikcast
   cover: String,
   title: String,
   subtitle?: String, // Only komiku.id
@@ -42,13 +44,19 @@ interface DetailManga {
   synopsis: String,
   genre: GenreList,
   character: String[], // Only komiku.id
-  totalchapter: Number
+  totalchapter: Number,
+  chapter: ChapterView,
 }
 interface ReadManga {
+  detail?: {
+    slug: String,
+    openweb: String,
+  },
   message?: String,
   title: String,
   subtitle?: String, // Only komiku.id
   chapter: Number,
   islast: Boolean,
-  image: String[]
+  image: String[],
+  needPassword: Boolean,
 }

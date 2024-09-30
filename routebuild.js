@@ -2,6 +2,7 @@ const fs = require("fs")
 const route = require("express").Router()
 
 const komiku = require("./lib/komiku.js")
+const komikcast = require("./lib/komikcast.js")
 const maid = require("./lib/maid.js")
 const bmkg = require("./lib/bmkg.js")
 const ssstik = require("./lib/ssstik.js")
@@ -114,7 +115,8 @@ route.get("/komiku.id/manga/:slug/read", async (req, res) => {
   try {
     const params = {
       slug: req.params.slug,
-      length: req.query.next
+      length: req.query.next,
+      search: req.query.search
     }
     const request = await komiku.Manga_Read(params)
     return responQuick(request, req, res)
@@ -123,6 +125,7 @@ route.get("/komiku.id/manga/:slug/read", async (req, res) => {
     return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
   }
 })
+// NOT RECOMMEND FOR NOW
 route.get("/komiku.id/manga/:slug/read/view-web", (req, res) => {
   console.log(req)
   res.send(
@@ -184,7 +187,9 @@ route.get("/maid.my.id/manga/:slug/read", async (req, res) => {
   try {
     const params = {
       slug: req.params.slug,
-      length: req.query.next
+      length: req.query.next,
+      search: req.query.search,
+      password: req.query.password // Need password if you want show Doujin
     }
     const request = await maid.Manga_Read(params)
     return responQuick(request, req, res)
@@ -193,6 +198,7 @@ route.get("/maid.my.id/manga/:slug/read", async (req, res) => {
     return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
   }
 })
+// NOT RECOMMEND FOR NOW
 route.get("/maid.my.id/manga/:slug/read/view-web", (req, res) => {
   console.log(req)
   res.send(
@@ -202,6 +208,71 @@ route.get("/maid.my.id/manga/:slug/read/view-web", (req, res) => {
     .replaceAll("--BACKGROUND", req.query?.colorbg?.replace("hash","#") || "")
     .replaceAll("--COLORTEXT", req.query?.colortx?.replace("hash","#") || "")
   )
+})
+/// # ---- [ KOMIKCAST.CZ ] ----
+route.get("/komikcast.cz", async (req, res) => {
+  try {
+    const params = {
+      length: req.query.length
+    }
+    const request = await komikcast.Manga_Recommend(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komikcast.cz/search", async (req, res) => {
+  try {
+    const params = {
+      query: req.query.q,
+      length: req.query.length,
+    }
+    const request = await komikcast.Manga_Search(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komikcast.cz/genre/:slug", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug,
+      length: req.query.length,
+    }
+    const request = await komikcast.Manga_Genre(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komikcast.cz/manga/:slug", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug
+    }
+    const request = await komikcast.Manga_Detail(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/komikcast.cz/manga/:slug/read", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug,
+      length: req.query.next,
+      search: req.query.search,
+    }
+    const request = await komikcast.Manga_Read(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
 })
 /// # ---- [ BMKG ] ----
 route.get("/bmkg/cuaca/:slug/areaonly", async (req, res) => {
