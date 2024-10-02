@@ -6,9 +6,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100;0,300;0,400;0,500;1,100;1,200;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400;1,500&family=Quicksand:wght@300;400;500&family=Raleway:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;1,100;1,300;1,400;1,500&family=Rubik:wght@300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <title>Manga View</title>
   <style>*{margin:0;padding:0;font-family:"Balsamiq Sans",system-ui}body,html{background-color:--BACKGROUND;color:--COLORTEXT}.boxloading{width:100%;height:100vh;display:flex;align-items:center;justify-content:center}.boxloading_container{width:100%;max-width:280px}.boxloading_container h3{font-size:1.4rem;text-align:center;margin-bottom:12px}.boxloading_container p{margin-bottom:20px;text-align:center}.boxloading_container_barbox{width:100%;height:4px;overflow:hidden;border-radius:6px;background:#e7e7e7}.boxloading_container_bar{width:100%;height:4px;background:#0004ff;animation:animatebarloading .8s infinite ease}@keyframes animatebarloading{0%{margin-left:-100%}100%{margin-left:200%}}img{width:100%;margin:0;padding:0;}.contentcontainer{width:100%;display:flex;flex-wrap:wrap;}
+    body[data-loading]::before {
+      position: fixed;
+      content: "Memuat data...";
+      top: 0; left: calc(50% - calc(130px/2) - calc(12px));
+      width: 130px;
+      background-color: #ffd000;
+      padding: 5px 12px;
+      border-radius: 0px 0px 9px 9px;
+      text-align: center;
+    }
     .btn-next {
       position: sticky;
       bottom: 0;
@@ -27,9 +37,70 @@
       border-radius: 50%;
       box-shadow: rgba(0,0,0,0.2) 0px 4px 0px;
     }
+    .reading-info {
+      width: 100%;
+      height: 60px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+    }
+    .reading-info .contentcontainer {
+      background-color: white;
+      box-shadow: rgba(0,0,0,0.2) 0px -1px 18px;
+      width: 100%;
+      height: 60px;
+      user-select: none;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+    .reading-info .contentcontainer .btn-reading {
+      width: 40px;
+      height: 60px;
+      background-color: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .reading-info .contentcontainer .info-reading {
+      width: calc(100% - calc(40px * 2));
+      /* height: 60px; */
+      text-align: center;
+    }
+    .reading-info .contentcontainer .info-reading p {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+    .reading-info .contentcontainer .info-reading small {
+      font-size: 0.8rem;
+      color: #3f3f3f;
+    }
+    .container-alert {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0px 20px;
+    }
+    .box-alert {
+      padding: 5px 8px;
+      box-shadow: rgba(0,0,0,0.2), 0px 2px 5px;
+      background-color: white;
+    }
+    .btnlist-alert {
+      display: flex;
+      justify-content: flex-end;
+    }
   </style>
 </head>
-<body>
+<body data-loading="true">
   <div class="contentcontainer" id="readly">
     <div class="boxloading">
       <div class="boxloading_container">
@@ -40,48 +111,137 @@
         </div>
       </div>
     </div>
+    <div class="reading-info" style="display: none;">
+      <div class="contentcontainer">
+        <button class="btn-reading" data-btnreader="before"><span class="material-symbols-outlined">chevron_left</span></button>
+        <div class="info-reading">
+          <p></p>
+        </div>
+        <button class="btn-reading" data-btnreader="next"><span class="material-symbols-outlined">chevron_right</span></button>
+      </div>
+    </div>
   </div>
   <script>
+    if(!window.ReactNativeWebView) {
+      console.warn('[ReactNativeWebView]:', 'Tidak terdeteksi sebagai react-native-webview, jika kamu menjalankan di real browser pastikan kamu menggunakan chrome (tidak didukung browser selain chrome dan firefox)')
+    }
+    function SendingToReactNativeWebView(datamsg) {
+      console.log("[Sending To ReactNative]:", datamsg)
+      if(!window.ReactNativeWebView) return;
+      window.ReactNativeWebView.postMessage(JSON.stringify(datamsg))
+    }
+    function SendingMessage(message, type = "log") {
+      const typeSelect = "log,info,warn,error".split(",")
+      const typeValue = typeSelect.includes(type)? type : typeSelect[0]
+      const sender = (Array.isArray(message)? message : [message])
+      console[typeValue](`[SendingMessage ${typeValue.toUpperCase()}]:`, ...sender)
+      SendingToReactNativeWebView({
+        component: "console",
+        type: typeValue,
+        message: sender
+      })
+    }
+    function CreateAlertInfo(title, message) {
+      SendingToReactNativeWebView({
+        component: "alert",
+        element: [
+          title,
+          message,
+          [{text:"Oke"}]
+        ]
+      })
+      const container = document.createElement("div")
+      const box = document.createElement("div")
+      const btlist = document.createElement("div")
+      const btn = document.createElement('button')
+      const titlex = document.createElement("h2")
+      const description = document.createElement("p")
+      container.append(box)
+      box.append(titlex)
+      box.append(description)
+      box.append(btlist)
+      btlist.append(btn)
+
+      btn.innerText = "Oke"
+      titlex.innerText = title
+      description.innerText = message
+
+      container.className = "container-alert"
+      box.className = "box-alert"
+      btlist.className = "btnlist-alert"
+
+      document.querySelector('body').append(container)
+    }
     const a = new URLSearchParams(location.search)
+    const infoBox = document.querySelector('.reading-info')
+    const infoTitle = document.querySelector('.reading-info p')
+    const infoLoading = document.querySelector('html body')
+    const btnLeft = document.querySelector('.btn-reading[data-btnreader="before"]')
+    const btnRight = document.querySelector('.btn-reading[data-btnreader="next"]')
+    const hosted = '$HOSTED'
+    const read = '$SLUGREAD'
     const b = a.get("response")
     if(b) {
       const createCss = document.createElement("style")
       createCss.innerText = `@media only screen and (min-width: ${b}) {.contentcontainer{width:100%;max-width:${b};margin:auto;}}`
       document.querySelector('head').append(createCss)
     }
-    const hosted = '$HOSTED'
-    const read = '$SLUGREAD'
-    const url = `${location.origin}/${hosted}/manga/${read}/read?next=${a.get("next")||""}`
-    async function fetching() {
+    async function fetching(nextpage) {
       try {
+        infoLoading.setAttribute("data-loading","!")
+        const url = `${location.origin}/${hosted}/manga/${read}/-read?next=${nextpage||a.get("next")||""}`
+        SendingMessage(['Memuat data API', url])
         const datafetch = await fetch(url)
         const datajson = await datafetch.json()
+        if(infoLoading.getAttribute("data-loading")) {
+          infoLoading.removeAttribute("data-loading")
+        }
         document.querySelector('.boxloading').style.display = "none"
+        document.querySelector('#readly').style.marginBottom = "60px"
         console.log(datajson)
         if(typeof datajson?.data?.image != "object" || !Array.isArray(datajson?.data?.image)) {
+          SendingMessage("Masalah pengambilan data","warn")
+          CreateAlertInfo(`(Kesalahan ${datajson.status}!)`, datajson.message)
           return;
         }
+        infoLoading.setAttribute("data-chapter", String(datajson.data.chapter))
         const urlList = datajson.data.image
+        infoTitle.innerText = datajson.data?.title
         const box = document.getElementById('readly')
+        document.querySelectorAll('#readly img').forEach((el) => {
+          el.remove()
+        })
         for(let i in urlList) {
           const img = document.createElement("img")
           img.src = urlList[i]
-          console.log(Number(i) - 4, Number(i))
-          if(urlList.length - 4 == Number(i) && a.get("btnnext") && !datajson.data.islast) {
-            // const createDocs = document.createElement("div")
-            // createDocs.className = "btn-next"
-            // const paramsURL = new URLSearchParams(location.search)
-            // paramsURL.append("next", Number(paramsURL.get("next"))+1)
-            // const buildURLNext = `${location.origin}${location.pathname}?${paramsURL.toString()}`
-            // createDocs.innerHTML = `<div class="contentcontainer"><a href="${buildURLNext}"><span class="material-symbols-outlined">arrow_forward</span></a></div>`
-            // box.appendChild(createDocs)
-          }
           box.appendChild(img)
         }
+        infoBox.style.display = "flex"
+        btnLeft.style.opacity = (datajson.data.chapter < 2? "0" : "1")
+        btnRight.style.opacity = (datajson.data.islast? "0" : "1")
+        SendingToReactNativeWebView({
+          component: "localstorage.set",
+          key: `historymanga-${read}`,
+          value: `chapter:${datajson.data.chapter},host:${hosted}`
+        })
       } catch(err) {
+        if(infoLoading.getAttribute("data-loading")) {
+          infoLoading.removeAttribute("data-loading")
+        }
         document.querySelector('.boxloading').style.display = "none"
       }
     }
+    btnLeft.addEventListener("click", () => {
+      if(infoLoading.getAttribute("data-loading")) return;
+      const gettingChapter = document.querySelector('body').getAttribute("data-chapter")
+      if(Number(gettingChapter) - 2 < 0) return;
+      fetching(Number(gettingChapter) - 2)
+    })
+    btnRight.addEventListener("click", () => {
+      if(infoLoading.getAttribute("data-loading")) return;
+      const gettingChapter = document.querySelector('body').getAttribute("data-chapter")
+      fetching(Number(gettingChapter))
+    })
     fetching()
   </script>
 </body>
