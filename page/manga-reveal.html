@@ -189,7 +189,7 @@
     async function fetching(nextpage) {
       try {
         infoLoading.setAttribute("data-loading","!")
-        const url = `${location.origin}/${hosted}/manga/${read}/-read?next=${nextpage||a.get("next")||""}`
+        const url = `${location.origin}/${hosted}/manga/${read}/read?next=${nextpage||a.get("next")||""}`
         SendingMessage(['Memuat data API', url])
         const datafetch = await fetch(url)
         const datajson = await datafetch.json()
