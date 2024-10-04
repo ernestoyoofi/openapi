@@ -39,7 +39,7 @@ interface DetailManga {
   creator?: String, // Only komiku.id
   category: String,
   storyconcept?: String, // Only komiku.id
-  status: String,
+  status?: String,
   rate?: String, // Only maid.my.id
   synopsis: String,
   genre: GenreList,

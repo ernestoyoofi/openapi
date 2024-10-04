@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100;0,300;0,400;0,500;1,100;1,200;1,300;1,400;1,500&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;1,100;1,200;1,300;1,400;1,500&family=Quicksand:wght@300;400;500&family=Raleway:ital,wght@0,200;0,300;0,400;0,500;0,600;1,200;1,300;1,400;1,500;1,600&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;1,100;1,300;1,400;1,500&family=Rubik:wght@300&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <title>Manga View</title>
-  <style>*{margin:0;padding:0;font-family:"Balsamiq Sans",system-ui}body,html{background-color:--BACKGROUND;color:--COLORTEXT}.boxloading{width:100%;height:100vh;display:flex;align-items:center;justify-content:center}.boxloading_container{width:100%;max-width:280px}.boxloading_container h3{font-size:1.4rem;text-align:center;margin-bottom:12px}.boxloading_container p{margin-bottom:20px;text-align:center}.boxloading_container_barbox{width:100%;height:4px;overflow:hidden;border-radius:6px;background:#e7e7e7}.boxloading_container_bar{width:100%;height:4px;background:#0004ff;animation:animatebarloading .8s infinite ease}@keyframes animatebarloading{0%{margin-left:-100%}100%{margin-left:200%}}img{width:100%;margin:0;padding:0;}.contentcontainer{width:100%;display:flex;flex-wrap:wrap;}
+  <style>*{margin:0;padding:0;font-family:"Balsamiq Sans",system-ui;box-sizing:border-box;}body,html{background-color:--BACKGROUND;color:--COLORTEXT}.boxloading{width:100%;height:100vh;display:flex;align-items:center;justify-content:center}.boxloading_container{width:100%;max-width:280px}.boxloading_container h3{font-size:1.4rem;text-align:center;margin-bottom:12px}.boxloading_container p{margin-bottom:20px;text-align:center}.boxloading_container_barbox{width:100%;height:4px;overflow:hidden;border-radius:6px;background:#e7e7e7}.boxloading_container_bar{width:100%;height:4px;background:#0004ff;animation:animatebarloading .8s infinite ease}@keyframes animatebarloading{0%{margin-left:-100%}100%{margin-left:200%}}img{width:100%;margin:0;padding:0;}.contentcontainer{width:100%;display:flex;flex-wrap:wrap;}
     body[data-loading]::before {
       position: fixed;
       content: "Memuat data...";
@@ -73,6 +73,9 @@
     .reading-info .contentcontainer .info-reading p {
       font-size: 1rem;
       font-weight: bold;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: wrap;
     }
     .reading-info .contentcontainer .info-reading small {
       font-size: 0.8rem;
@@ -88,15 +91,55 @@
       align-items: center;
       justify-content: center;
       padding: 0px 20px;
+      background-color: rgba(0,0,0,0.7);
+      z-index: 10;
+      animation: .3s UpTopAlertsContainer;
     }
     .box-alert {
-      padding: 5px 8px;
-      box-shadow: rgba(0,0,0,0.2), 0px 2px 5px;
+      width: 100%;
+      max-width: 380px;
+      min-width: 280px;
+      padding: 7px 12px;
       background-color: white;
+      box-shadow: rgba(0,0,0,0.6) 0px 2px 6px;
+      border-radius: 3px;
+      animation: .3s UpTopAlerts;
+    }
+    .text-alert {
+      padding: 4px 6px;
+      padding-top: 9px;
+    }
+    .text-alert h2, .text-alert p {
+      white-space: pre-wrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      margin-bottom: 8px;
+      display: block;
     }
     .btnlist-alert {
       display: flex;
       justify-content: flex-end;
+    }
+    .btnlist-alert button {
+      font-size: 0.95rem;
+      padding: 7px 14px;
+      background: transparent;
+      border: none;
+      border-radius: 5px;
+      margin-left: 2px;
+      cursor: pointer;
+    }
+    .btnlist-alert button:hover {
+      background: #e4e4e4;
+    }
+    @keyframes UpTopAlertsContainer {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+    @keyframes UpTopAlerts {
+      0% { margin-top: 20px; opacity: 0; }
+      20% { margin-top: 20px; opacity: 1; }
+      100% { margin-top: 0px; opacity: 1; }
     }
   </style>
 </head>
@@ -150,15 +193,21 @@
           [{text:"Oke"}]
         ]
       })
+      if(window.ReactNativeWebView) return;
+      if(document.querySelector('.container-alert')) {
+        document.querySelector('.container-alert').remove()
+      }
       const container = document.createElement("div")
       const box = document.createElement("div")
       const btlist = document.createElement("div")
       const btn = document.createElement('button')
+      const containerp = document.createElement("div")
       const titlex = document.createElement("h2")
       const description = document.createElement("p")
       container.append(box)
-      box.append(titlex)
-      box.append(description)
+      containerp.append(titlex)
+      containerp.append(description)
+      box.append(containerp)
       box.append(btlist)
       btlist.append(btn)
 
@@ -168,9 +217,22 @@
 
       container.className = "container-alert"
       box.className = "box-alert"
+      containerp.className = "text-alert"
       btlist.className = "btnlist-alert"
 
       document.querySelector('body').append(container)
+
+      function KeyClearAlert() {
+        btn.removeEventListener("click", KeyClearAlert)
+        box.style.transition = ".3s"
+        container.style.transition = ".3s"
+        box.style.marginTop = "-20px"
+        container.style.opacity = "0"
+        setTimeout(() => {
+          container.remove()
+        }, 299)
+      }
+      btn.addEventListener("click", KeyClearAlert)
     }
     const a = new URLSearchParams(location.search)
     const infoBox = document.querySelector('.reading-info')
@@ -186,10 +248,11 @@
       createCss.innerText = `@media only screen and (min-width: ${b}) {.contentcontainer{width:100%;max-width:${b};margin:auto;}}`
       document.querySelector('head').append(createCss)
     }
-    async function fetching(nextpage) {
+    async function fetching(nextpage, search) {
       try {
+        const typeNetworkIsData = navigator.connection.type? navigator.connection.type == "cellular" : false
         infoLoading.setAttribute("data-loading","!")
-        const url = `${location.origin}/${hosted}/manga/${read}/read?next=${nextpage||a.get("next")||""}`
+        const url = `${location.origin}/${hosted}/manga/${read}/read?next=${nextpage||a.get("next")||""}${search? `&search=${search}`:""}`
         SendingMessage(['Memuat data API', url])
         const datafetch = await fetch(url)
         const datajson = await datafetch.json()
@@ -198,7 +261,7 @@
         }
         document.querySelector('.boxloading').style.display = "none"
         document.querySelector('#readly').style.marginBottom = "60px"
-        console.log(datajson)
+        // console.log(datajson)
         if(typeof datajson?.data?.image != "object" || !Array.isArray(datajson?.data?.image)) {
           SendingMessage("Masalah pengambilan data","warn")
           CreateAlertInfo(`(Kesalahan ${datajson.status}!)`, datajson.message)
@@ -214,6 +277,10 @@
         for(let i in urlList) {
           const img = document.createElement("img")
           img.src = urlList[i]
+          img.alt = `Gambar komik ${i}, jika tidak nampil klik "Open original web"`
+          if(typeNetworkIsData) {
+            img.setAttribute("loading", "lazy")
+          }
           box.appendChild(img)
         }
         infoBox.style.display = "flex"
@@ -221,8 +288,12 @@
         btnRight.style.opacity = (datajson.data.islast? "0" : "1")
         SendingToReactNativeWebView({
           component: "localstorage.set",
-          key: `historymanga-${read}`,
-          value: `chapter:${datajson.data.chapter},host:${hosted}`
+          key: `lastread-host${hosted}-${read}`,
+          value: `${datajson.data.chapter}`
+        })
+        SendingToReactNativeWebView({
+          component: "navigation.btn",
+          link: datajson.data.detail.openweb
         })
       } catch(err) {
         if(infoLoading.getAttribute("data-loading")) {
@@ -232,17 +303,17 @@
       }
     }
     btnLeft.addEventListener("click", () => {
-      if(infoLoading.getAttribute("data-loading")) return;
+      if(infoLoading.getAttribute("data-loading")) return CreateAlertInfo("Sabar!","Tidak dapat melanjutkan jika sedang memuat data baru")
       const gettingChapter = document.querySelector('body').getAttribute("data-chapter")
       if(Number(gettingChapter) - 2 < 0) return;
       fetching(Number(gettingChapter) - 2)
     })
     btnRight.addEventListener("click", () => {
-      if(infoLoading.getAttribute("data-loading")) return;
+      if(infoLoading.getAttribute("data-loading")) return CreateAlertInfo("Sabar!","Tidak dapat melanjutkan jika sedang memuat data baru")
       const gettingChapter = document.querySelector('body').getAttribute("data-chapter")
       fetching(Number(gettingChapter))
     })
-    fetching()
+    fetching(a.get("next"), a.get("search"))
   </script>
 </body>
 </html>
