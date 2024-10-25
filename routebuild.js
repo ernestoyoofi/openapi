@@ -7,6 +7,7 @@ const mangakuio = require("./lib/mangaku.js")
 const maid = require("./lib/maid.js")
 const bmkg = require("./lib/bmkg.js")
 const ssstik = require("./lib/ssstik.js")
+const samehadaku = require("./lib/samehadaku.js")
 
 const codeStatus = {
   notFound: {
@@ -51,6 +52,10 @@ const responQuick = (request, req, res) => {
     for(const head of req.addRespon.header) {
       res.setHeader(head.key, head.value)
     }
+  }
+
+  if(Object.keys(request).includes("redirect_uri")) {
+    return res.status(301).redirect(request.redirect_uri)
   }
 
   return res.status(status).json({
@@ -340,6 +345,83 @@ route.get("/bmkg/cuaca/:slug/info", async (req, res) => {
       areacode: req.query.areacode
     }
     const request = await bmkg.APICuaca(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+/// # ---- [ SAMEHADAKU ] ----
+route.get("/samehadaku", async (req, res) => {
+  try {
+    const params = {
+      length: req.query.length,
+    }
+    const request = await samehadaku.RecommendStreaming(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/samehadaku/search", async (req, res) => {
+  try {
+    const params = {
+      query: req.query.q,
+      length: req.query.length,
+    }
+    const request = await samehadaku.SearchStreaming(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/samehadaku/genre", async (req, res) => {
+  try {
+    const params = {
+      slug: req.query.slug,
+      length: req.query.length,
+    }
+    const request = await samehadaku.SearchByGenre(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/samehadaku/detail/:slug", async (req, res) => {
+  try {
+    const params = {
+      slug: req.params.slug,
+    }
+    const request = await samehadaku.GetDetailStreaming(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/samehadaku/detail/:slug/view", async (req, res) => {
+  try {
+    const params = {
+      next: req.query.next,
+      slug: req.params.slug,
+    }
+    const request = await samehadaku.GetListStreamingSource(params)
+    return responQuick(request, req, res)
+  } catch(err) {
+    console.log(`[URL ${req.url}]:`,err)
+    return res.status(codeStatus.internalError.status).json(codeStatus.internalError)
+  }
+})
+route.get("/samehadaku/streaming-source", async (req, res) => {
+  try {
+    const params = {
+      postId: req.query.post,
+      num: req.query.num,
+    }
+    const request = await samehadaku.GetUrlWebStreaming(params)
     return responQuick(request, req, res)
   } catch(err) {
     console.log(`[URL ${req.url}]:`,err)
