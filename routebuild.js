@@ -418,7 +418,7 @@ route.get("/samehadaku/detail/:slug/view", async (req, res) => {
 route.get("/samehadaku/streaming-source", async (req, res) => {
   try {
     const params = {
-      postId: req.query.post,
+      postId: req.query.postId,
       num: req.query.num,
     }
     const request = await samehadaku.GetUrlWebStreaming(params)
