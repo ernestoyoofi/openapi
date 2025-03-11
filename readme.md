@@ -2,6 +2,9 @@
 
 REST API yang terbuka untuk apapun dalam metode scrapping data pada situs atau memanipulasi untuk digunakan secara publik dan gratis
 
+> [!WARNING]
+> Project sudah tidak beroperasi dan tidak dilanjutkan lagi, tetapi jika ingin melanjutkannya, silahkan
+
 > **INGAT**
 >
 > Ga boleh spam walapun tanpa batas, karena api ini tidak resmi secara langsung (alias ilegal digunakan), jika kamu ingin menggunakan secara spam, silahkan [clone repo ini](https://github.com/ernestoyoofi/openapi.git) lalu jalankan secara lokal dengan `node index`
